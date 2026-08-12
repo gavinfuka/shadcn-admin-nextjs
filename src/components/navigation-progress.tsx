@@ -1,18 +1,29 @@
+'use client'
+
 import { useEffect, useRef } from 'react'
-import { useRouterState } from '@tanstack/react-router'
+import { usePathname, useSearchParams } from 'next/navigation'
 import LoadingBar, { type LoadingBarRef } from 'react-top-loading-bar'
 
 export function NavigationProgress() {
   const ref = useRef<LoadingBarRef>(null)
-  const state = useRouterState()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    if (state.status === 'pending') {
-      ref.current?.continuousStart()
-    } else {
-      ref.current?.complete()
+    const handleClick = (event: MouseEvent) => {
+      const anchor = (event.target as Element).closest('a')
+      if (
+        anchor?.origin === window.location.origin &&
+        anchor.href !== window.location.href
+      ) {
+        ref.current?.continuousStart()
+      }
     }
-  }, [state.status])
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
+
+  useEffect(() => ref.current?.complete(), [pathname, searchParams])
 
   return (
     <LoadingBar

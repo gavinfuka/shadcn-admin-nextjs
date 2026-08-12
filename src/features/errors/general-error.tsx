@@ -1,4 +1,4 @@
-import { useNavigate, useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 

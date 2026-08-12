@@ -1,12 +1,9 @@
 {
-  "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "tailwindCSS.experimental.classRegex": [
-    "className:\\s*\"([^\"]*)\"",
-    "className:\\s*'([^']*)'",
-    "tdClassName:\\s*\"([^\"]*)\"",
-    "tdClassName:\\s*'([^']*)'",
-    "thClassName:\\s*\"([^\"]*)\"",
-    "thClassName:\\s*'([^']*)'"
-  ]
+  "editor.fontSize": 12,
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

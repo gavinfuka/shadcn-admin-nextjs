@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
 import { Menu } from 'lucide-react'
+import { Link } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {

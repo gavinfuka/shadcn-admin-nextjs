@@ -14,14 +14,10 @@ vi.mock('@/stores/auth-store', () => ({
   }),
 }))
 
-vi.mock('@tanstack/react-router', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@tanstack/react-router')>()
-  return {
-    ...actual,
-    useNavigate: () => navigate,
-    useLocation: () => ({ href: MOCK_HREF }),
-  }
-})
+vi.mock('@/lib/navigation', () => ({
+  useNavigate: () => navigate,
+  useLocation: () => ({ href: MOCK_HREF }),
+}))
 
 describe('SignOutDialog', () => {
   beforeEach(() => {

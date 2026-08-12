@@ -1,4 +1,3 @@
-import { Outlet } from '@tanstack/react-router'
 import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { ConfigDrawer } from '@/components/config-drawer'
@@ -37,7 +36,7 @@ const sidebarNavItems = [
   },
 ]
 
-export function Settings() {
+export function Settings({ children }: { children: React.ReactNode }) {
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -62,9 +61,7 @@ export function Settings() {
           <aside className='top-0 lg:sticky lg:w-1/5'>
             <SidebarNav items={sidebarNavItems} />
           </aside>
-          <div className='flex w-full overflow-y-hidden p-1'>
-            <Outlet />
-          </div>
+          <div className='flex w-full overflow-y-hidden p-1'>{children}</div>
         </div>
       </Main>
     </>

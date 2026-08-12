@@ -1,5 +1,5 @@
-import { Link } from '@tanstack/react-router'
 import { Menu, X } from 'lucide-react'
+import { Link } from '@/lib/navigation'
 import { cn } from '@/lib/utils'
 import {
   SidebarMenu,
@@ -26,7 +26,7 @@ export function AppTitle() {
               className='grid flex-1 text-start text-sm leading-tight'
             >
               <span className='truncate font-bold'>Shadcn-Admin</span>
-              <span className='truncate text-xs'>Vite + ShadcnUI</span>
+              <span className='truncate text-xs'>Next.js + ShadcnUI</span>
             </Link>
             <ToggleSidebar />
           </div>

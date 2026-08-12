@@ -1,6 +1,6 @@
 # Shadcn Admin Dashboard
 
-Admin Dashboard UI crafted with Shadcn and Vite. Built with responsiveness and accessibility in mind.
+Admin Dashboard UI crafted with Shadcn and Next.js. Built with responsiveness and accessibility in mind.
 
 ![alt text](public/images/shadcn-admin.png)
 
@@ -62,9 +62,9 @@ If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest 
 
 **UI:** [ShadcnUI](https://ui.shadcn.com) (TailwindCSS + RadixUI)
 
-**Build Tool:** [Vite](https://vitejs.dev/)
+**Framework:** [Next.js](https://nextjs.org/)
 
-**Routing:** [TanStack Router](https://tanstack.com/router/latest)
+**Routing:** [Next.js App Router](https://nextjs.org/docs/app)
 
 **Type Checking:** [TypeScript](https://www.typescriptlang.org/)
 

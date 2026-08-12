@@ -6,10 +6,9 @@ import { OtpForm } from './otp-form'
 
 const navigate = vi.fn()
 
-vi.mock('@tanstack/react-router', async (orig) => {
-  const actual = await orig<typeof import('@tanstack/react-router')>()
-  return { ...actual, useNavigate: () => navigate }
-})
+vi.mock('@/lib/navigation', () => ({
+  useNavigate: () => navigate,
+}))
 
 vi.mock('@/lib/show-submitted-data', () => ({ showSubmittedData: vi.fn() }))
 
