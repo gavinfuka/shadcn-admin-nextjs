@@ -1,4 +1,5 @@
-import { getCookie } from '@/lib/cookies'
+'use client'
+
 import { cn } from '@/lib/utils'
 import { LayoutProvider } from '@/context/layout-provider'
 import { SearchProvider } from '@/context/search-provider'
@@ -8,10 +9,13 @@ import { SkipToMain } from '@/components/skip-to-main'
 
 type AuthenticatedLayoutProps = {
   children: React.ReactNode
+  defaultOpen: boolean
 }
 
-export function AuthenticatedLayout({ children }: AuthenticatedLayoutProps) {
-  const defaultOpen = getCookie('sidebar_state') !== 'false'
+export function AuthenticatedLayout({
+  children,
+  defaultOpen,
+}: AuthenticatedLayoutProps) {
   return (
     <SearchProvider>
       <LayoutProvider>
