@@ -1,9 +1,20 @@
 import type { Metadata } from 'next'
+import { Inter, Manrope } from 'next/font/google'
 import { Suspense } from 'react'
 import '@/styles/index.css'
 import { Toaster } from '@/components/ui/sonner'
 import { NavigationProgress } from '@/components/navigation-progress'
 import { Providers } from './providers'
+
+const inter = Inter({
+  variable: '--font-inter-family',
+  subsets: ['latin'],
+})
+
+const manrope = Manrope({
+  variable: '--font-manrope-family',
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://shadcn-admin.netlify.app'),
@@ -38,7 +49,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html
+      lang='en'
+      className={`${inter.variable} ${manrope.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <Providers>
           <Suspense>
