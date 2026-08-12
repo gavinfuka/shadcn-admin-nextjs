@@ -1,0 +1,84 @@
+'use client'
+
+import * as React from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
+
+function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'group/input-group relative flex h-9 w-full min-w-0 items-center rounded-xl border border-input bg-input/30 transition-colors outline-none has-[textarea]:h-auto has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-[3px] has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50',
+        className
+      )}
+      data-slot='input-group'
+      role='group'
+      {...props}
+    />
+  )
+}
+
+const inputGroupAddonVariants = cva(
+  'flex h-auto cursor-text items-center justify-center gap-2 py-2 text-sm font-medium text-muted-foreground select-none',
+  {
+    variants: {
+      align: {
+        'inline-start': 'order-first pl-3',
+        'inline-end': 'order-last pr-3',
+        'block-start': 'order-first w-full justify-start px-3 pt-3',
+        'block-end': 'order-last w-full justify-start px-3 pb-3',
+      },
+    },
+    defaultVariants: { align: 'inline-start' },
+  }
+)
+
+function InputGroupAddon({
+  className,
+  align = 'inline-start',
+  ...props
+}: React.ComponentProps<'div'> & VariantProps<typeof inputGroupAddonVariants>) {
+  return (
+    <div
+      className={cn(inputGroupAddonVariants({ align }), className)}
+      data-align={align}
+      data-slot='input-group-addon'
+      onClick={(event) => {
+        if ((event.target as HTMLElement).closest('button')) return
+        event.currentTarget.parentElement
+          ?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+            'textarea, input'
+          )
+          ?.focus()
+      }}
+      role='group'
+      {...props}
+    />
+  )
+}
+
+function InputGroupButton({
+  className,
+  type = 'button',
+  variant = 'ghost',
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  return <Button className={cn('shadow-none', className)} type={type} variant={variant} {...props} />
+}
+
+function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
+  return <span className={cn('flex items-center gap-2 text-sm text-muted-foreground', className)} {...props} />
+}
+
+function InputGroupInput({ className, ...props }: React.ComponentProps<'input'>) {
+  return <Input className={cn('flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0', className)} data-slot='input-group-control' {...props} />
+}
+
+function InputGroupTextarea({ className, ...props }: React.ComponentProps<'textarea'>) {
+  return <Textarea className={cn('flex-1 resize-none rounded-none border-0 bg-transparent py-2 shadow-none focus-visible:ring-0 dark:bg-transparent', className)} data-slot='input-group-control' {...props} />
+}
+
+export { InputGroup, InputGroupAddon, InputGroupButton, InputGroupText, InputGroupInput, InputGroupTextarea }
