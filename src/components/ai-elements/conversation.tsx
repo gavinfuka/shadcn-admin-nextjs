@@ -3,8 +3,8 @@
 import { type ComponentProps, useCallback } from 'react'
 import { ArrowDownIcon, DownloadIcon } from 'lucide-react'
 import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>
 
@@ -74,7 +74,10 @@ export const ConversationScrollButton = ({
   ...props
 }: ConversationScrollButtonProps) => {
   const { isAtBottom, scrollToBottom } = useStickToBottomContext()
-  const handleScrollToBottom = useCallback(() => scrollToBottom(), [scrollToBottom])
+  const handleScrollToBottom = useCallback(
+    () => scrollToBottom(),
+    [scrollToBottom]
+  )
 
   return (
     !isAtBottom && (
@@ -116,9 +119,12 @@ const defaultFormatMessage = (message: ConversationMessage): string => {
 
 export const messagesToMarkdown = (
   messages: ConversationMessage[],
-  formatMessage: (message: ConversationMessage, index: number) => string =
-    defaultFormatMessage
-): string => messages.map((message, index) => formatMessage(message, index)).join('\n\n')
+  formatMessage: (
+    message: ConversationMessage,
+    index: number
+  ) => string = defaultFormatMessage
+): string =>
+  messages.map((message, index) => formatMessage(message, index)).join('\n\n')
 
 export const ConversationDownload = ({
   messages,

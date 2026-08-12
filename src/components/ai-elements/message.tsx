@@ -1,6 +1,5 @@
 'use client'
 
-import type { UIMessage } from 'ai'
 import {
   type ComponentProps,
   createContext,
@@ -17,8 +16,10 @@ import { cjk } from '@streamdown/cjk'
 import { code } from '@streamdown/code'
 import { math } from '@streamdown/math'
 import { mermaid } from '@streamdown/mermaid'
+import type { UIMessage } from 'ai'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 import { Streamdown } from 'streamdown'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup, ButtonGroupText } from '@/components/ui/button-group'
 import {
@@ -27,7 +28,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { cn } from '@/lib/utils'
 
 export type MessageProps = HTMLAttributes<HTMLDivElement> & {
   from: UIMessage['role']
@@ -53,7 +53,7 @@ export const MessageContent = ({
 }: MessageContentProps) => (
   <div
     className={cn(
-      'flex min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm text-foreground',
+      'flex max-w-full min-w-0 flex-col gap-2 overflow-hidden text-sm text-foreground',
       className
     )}
     {...props}
@@ -100,7 +100,9 @@ export const MessageAction = ({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent><p>{tooltip}</p></TooltipContent>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   )
@@ -115,11 +117,16 @@ interface MessageBranchContextType {
   setBranches: (branches: ReactElement[]) => void
 }
 
-const MessageBranchContext = createContext<MessageBranchContextType | null>(null)
+const MessageBranchContext = createContext<MessageBranchContextType | null>(
+  null
+)
 
 const useMessageBranch = () => {
   const context = useContext(MessageBranchContext)
-  if (!context) throw new Error('MessageBranch components must be used within MessageBranch')
+  if (!context)
+    throw new Error(
+      'MessageBranch components must be used within MessageBranch'
+    )
   return context
 }
 
@@ -136,36 +143,69 @@ export const MessageBranch = ({
 }: MessageBranchProps) => {
   const [currentBranch, setCurrentBranch] = useState(defaultBranch)
   const [branches, setBranches] = useState<ReactElement[]>([])
-  const handleBranchChange = useCallback((branch: number) => {
-    setCurrentBranch(branch)
-    onBranchChange?.(branch)
-  }, [onBranchChange])
+  const handleBranchChange = useCallback(
+    (branch: number) => {
+      setCurrentBranch(branch)
+      onBranchChange?.(branch)
+    },
+    [onBranchChange]
+  )
   const goToPrevious = useCallback(() => {
-    handleBranchChange(currentBranch > 0 ? currentBranch - 1 : branches.length - 1)
+    handleBranchChange(
+      currentBranch > 0 ? currentBranch - 1 : branches.length - 1
+    )
   }, [branches.length, currentBranch, handleBranchChange])
   const goToNext = useCallback(() => {
-    handleBranchChange(currentBranch < branches.length - 1 ? currentBranch + 1 : 0)
+    handleBranchChange(
+      currentBranch < branches.length - 1 ? currentBranch + 1 : 0
+    )
   }, [branches.length, currentBranch, handleBranchChange])
-  const value = useMemo(() => ({ branches, currentBranch, goToNext, goToPrevious, setBranches, totalBranches: branches.length }), [branches, currentBranch, goToNext, goToPrevious])
+  const value = useMemo(
+    () => ({
+      branches,
+      currentBranch,
+      goToNext,
+      goToPrevious,
+      setBranches,
+      totalBranches: branches.length,
+    }),
+    [branches, currentBranch, goToNext, goToPrevious]
+  )
 
   return (
     <MessageBranchContext.Provider value={value}>
-      <div className={cn('grid w-full gap-2 [&>div]:pb-0', className)} {...props} />
+      <div
+        className={cn('grid w-full gap-2 [&>div]:pb-0', className)}
+        {...props}
+      />
     </MessageBranchContext.Provider>
   )
 }
 
 export type MessageBranchContentProps = HTMLAttributes<HTMLDivElement>
 
-export const MessageBranchContent = ({ children, ...props }: MessageBranchContentProps) => {
+export const MessageBranchContent = ({
+  children,
+  ...props
+}: MessageBranchContentProps) => {
   const { currentBranch, setBranches, branches } = useMessageBranch()
-  const childrenArray = useMemo(() => Array.isArray(children) ? children : [children], [children]) as ReactElement[]
+  const childrenArray = useMemo(
+    () => (Array.isArray(children) ? children : [children]),
+    [children]
+  ) as ReactElement[]
   useEffect(() => {
     if (branches.length !== childrenArray.length) setBranches(childrenArray)
   }, [branches.length, childrenArray, setBranches])
 
   return childrenArray.map((branch, index) => (
-    <div className={cn('grid gap-2 overflow-hidden [&>div]:pb-0', index === currentBranch ? 'block' : 'hidden')} key={branch.key ?? index} {...props}>
+    <div
+      className={cn(
+        'grid gap-2 overflow-hidden [&>div]:pb-0',
+        index === currentBranch ? 'block' : 'hidden'
+      )}
+      key={branch.key ?? index}
+      {...props}
+    >
       {branch}
     </div>
   ))
@@ -173,36 +213,100 @@ export const MessageBranchContent = ({ children, ...props }: MessageBranchConten
 
 export type MessageBranchSelectorProps = ComponentProps<typeof ButtonGroup>
 
-export const MessageBranchSelector = ({ className, ...props }: MessageBranchSelectorProps) => {
+export const MessageBranchSelector = ({
+  className,
+  ...props
+}: MessageBranchSelectorProps) => {
   const { totalBranches } = useMessageBranch()
   if (totalBranches <= 1) return null
-  return <ButtonGroup className={className} orientation='horizontal' {...props} />
+  return (
+    <ButtonGroup className={className} orientation='horizontal' {...props} />
+  )
 }
 
 export const MessageBranchPrevious = (props: ComponentProps<typeof Button>) => {
   const { goToPrevious, totalBranches } = useMessageBranch()
-  return <Button aria-label='Previous branch' disabled={totalBranches <= 1} onClick={goToPrevious} size='icon' type='button' variant='ghost' {...props}>{props.children ?? <ChevronLeftIcon size={14} />}</Button>
+  return (
+    <Button
+      aria-label='Previous branch'
+      disabled={totalBranches <= 1}
+      onClick={goToPrevious}
+      size='icon'
+      type='button'
+      variant='ghost'
+      {...props}
+    >
+      {props.children ?? <ChevronLeftIcon size={14} />}
+    </Button>
+  )
 }
 
 export const MessageBranchNext = (props: ComponentProps<typeof Button>) => {
   const { goToNext, totalBranches } = useMessageBranch()
-  return <Button aria-label='Next branch' disabled={totalBranches <= 1} onClick={goToNext} size='icon' type='button' variant='ghost' {...props}>{props.children ?? <ChevronRightIcon size={14} />}</Button>
+  return (
+    <Button
+      aria-label='Next branch'
+      disabled={totalBranches <= 1}
+      onClick={goToNext}
+      size='icon'
+      type='button'
+      variant='ghost'
+      {...props}
+    >
+      {props.children ?? <ChevronRightIcon size={14} />}
+    </Button>
+  )
 }
 
-export const MessageBranchPage = ({ className, ...props }: HTMLAttributes<HTMLSpanElement>) => {
+export const MessageBranchPage = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLSpanElement>) => {
   const { currentBranch, totalBranches } = useMessageBranch()
-  return <ButtonGroupText className={cn('border-none bg-transparent text-muted-foreground shadow-none', className)} {...props}>{currentBranch + 1} of {totalBranches}</ButtonGroupText>
+  return (
+    <ButtonGroupText
+      className={cn(
+        'border-none bg-transparent text-muted-foreground shadow-none',
+        className
+      )}
+      {...props}
+    >
+      {currentBranch + 1} of {totalBranches}
+    </ButtonGroupText>
+  )
 }
 
 export type MessageResponseProps = ComponentProps<typeof Streamdown>
 const streamdownPlugins = { cjk, code, math, mermaid }
 
-export const MessageResponse = memo(({ className, ...props }: MessageResponseProps) => (
-  <Streamdown className={cn('size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0', className)} plugins={streamdownPlugins} {...props} />
-), (previous, next) => previous.children === next.children)
+export const MessageResponse = memo(
+  ({ className, ...props }: MessageResponseProps) => (
+    <Streamdown
+      className={cn(
+        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
+        className
+      )}
+      plugins={streamdownPlugins}
+      {...props}
+    />
+  ),
+  (previous, next) => previous.children === next.children
+)
 
 MessageResponse.displayName = 'MessageResponse'
 
-export const MessageToolbar = ({ className, children, ...props }: ComponentProps<'div'>) => (
-  <div className={cn('mt-4 flex w-full items-center justify-between gap-4', className)} {...props}>{children}</div>
+export const MessageToolbar = ({
+  className,
+  children,
+  ...props
+}: ComponentProps<'div'>) => (
+  <div
+    className={cn(
+      'mt-4 flex w-full items-center justify-between gap-4',
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </div>
 )

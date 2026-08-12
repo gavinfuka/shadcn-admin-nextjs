@@ -7,6 +7,30 @@ export const textArtifact = new ArtifactDefinition({
   description: 'Useful for writing and editing prose',
   content: Editor,
   actions: [],
-  toolbar: [{ description: 'Improve writing', icon: <FileTextIcon />, onClick: ({ sendMessage }) => { void sendMessage({ role: 'user', parts: [{ type: 'text', text: 'Improve the writing in the current document.' }] }) } }],
-  onStreamPart: ({ setArtifact, streamPart }) => { if (streamPart.type === 'data-textDelta') setArtifact((artifact) => ({ ...artifact, content: artifact.content + streamPart.data, isVisible: true, status: 'streaming' })) },
+  toolbar: [
+    {
+      description: 'Improve writing',
+      icon: <FileTextIcon />,
+      onClick: ({ sendMessage }) => {
+        void sendMessage({
+          role: 'user',
+          parts: [
+            {
+              type: 'text',
+              text: 'Improve the writing in the current document.',
+            },
+          ],
+        })
+      },
+    },
+  ],
+  onStreamPart: ({ setArtifact, streamPart }) => {
+    if (streamPart.type === 'data-textDelta')
+      setArtifact((artifact) => ({
+        ...artifact,
+        content: artifact.content + streamPart.data,
+        isVisible: true,
+        status: 'streaming',
+      }))
+  },
 })

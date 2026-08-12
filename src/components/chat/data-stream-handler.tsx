@@ -23,15 +23,46 @@ export function DataStreamHandler() {
       setArtifact((current) => {
         const artifact = current ?? initialArtifactData
         switch (delta.type) {
-          case 'data-id': return { ...artifact, documentId: delta.data, isVisible: true, status: 'streaming' }
-          case 'data-title': return { ...artifact, title: delta.data, isVisible: true, status: 'streaming' }
-          case 'data-kind': return { ...artifact, kind: delta.data, isVisible: true, status: 'streaming' }
-          case 'data-clear': return { ...artifact, content: '', isVisible: true, status: 'streaming' }
+          case 'data-id':
+            return {
+              ...artifact,
+              documentId: delta.data,
+              isVisible: true,
+              status: 'streaming',
+            }
+          case 'data-title':
+            return {
+              ...artifact,
+              title: delta.data,
+              isVisible: true,
+              status: 'streaming',
+            }
+          case 'data-kind':
+            return {
+              ...artifact,
+              kind: delta.data,
+              isVisible: true,
+              status: 'streaming',
+            }
+          case 'data-clear':
+            return {
+              ...artifact,
+              content: '',
+              isVisible: true,
+              status: 'streaming',
+            }
           case 'data-textDelta':
           case 'data-codeDelta':
           case 'data-imageDelta':
-          case 'data-sheetDelta': return { ...artifact, content: artifact.content + delta.data, isVisible: true, status: 'streaming' }
-          case 'data-finish': return { ...artifact, status: 'idle' }
+          case 'data-sheetDelta':
+            return {
+              ...artifact,
+              content: artifact.content + delta.data,
+              isVisible: true,
+              status: 'streaming',
+            }
+          case 'data-finish':
+            return { ...artifact, status: 'idle' }
         }
       })
     }

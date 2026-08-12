@@ -13,7 +13,9 @@ type DataStreamContextValue = {
   dataStream: ChatDataPart[]
   setDataStream: React.Dispatch<React.SetStateAction<ChatDataPart[]>>
   waitingStatus: WaitingStatusData | undefined
-  setWaitingStatus: React.Dispatch<React.SetStateAction<WaitingStatusData | undefined>>
+  setWaitingStatus: React.Dispatch<
+    React.SetStateAction<WaitingStatusData | undefined>
+  >
 }
 
 const DataStreamContext = createContext<DataStreamContextValue | null>(null)

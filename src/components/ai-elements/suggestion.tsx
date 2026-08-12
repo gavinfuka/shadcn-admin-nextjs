@@ -1,9 +1,9 @@
 'use client'
 
 import { type ComponentProps, useCallback } from 'react'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
-import { cn } from '@/lib/utils'
 
 export type SuggestionsProps = ComponentProps<typeof ScrollArea>
 
@@ -34,7 +34,10 @@ export const Suggestion = ({
   children,
   ...props
 }: SuggestionProps) => {
-  const handleClick = useCallback(() => onClick?.(suggestion), [onClick, suggestion])
+  const handleClick = useCallback(
+    () => onClick?.(suggestion),
+    [onClick, suggestion]
+  )
 
   return (
     <Button

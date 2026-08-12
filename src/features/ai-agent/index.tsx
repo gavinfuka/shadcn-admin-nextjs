@@ -1,8 +1,8 @@
 'use client'
 
-import { ChatShell } from '@/components/chat/shell'
-import { DataStreamProvider } from '@/components/chat/data-stream-provider'
 import { ActiveChatProvider } from '@/hooks/use-active-chat'
+import { DataStreamProvider } from '@/components/chat/data-stream-provider'
+import { ChatShell } from '@/components/chat/shell'
 
 export function AiAgent() {
   return (

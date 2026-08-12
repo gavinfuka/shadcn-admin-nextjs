@@ -1,13 +1,27 @@
 'use client'
 
-import type { UseChatHelpers } from '@ai-sdk/react'
-import { ArrowUpIcon, ChevronDownIcon, PaperclipIcon, SquareIcon, XIcon } from 'lucide-react'
 import { type Dispatch, type SetStateAction, useRef } from 'react'
-import { ModelSelector, ModelSelectorContent, ModelSelectorGroup, ModelSelectorItem, ModelSelectorLogo, ModelSelectorName, ModelSelectorTrigger } from '@/components/ai-elements/model-selector'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import type { UseChatHelpers } from '@ai-sdk/react'
+import {
+  ArrowUpIcon,
+  ChevronDownIcon,
+  PaperclipIcon,
+  SquareIcon,
+  XIcon,
+} from 'lucide-react'
 import { chatModels } from '@/lib/chat-models'
 import type { Attachment, ChatMessage, VisibilityType } from '@/lib/chat-types'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorGroup,
+  ModelSelectorItem,
+  ModelSelectorLogo,
+  ModelSelectorName,
+  ModelSelectorTrigger,
+} from '@/components/ai-elements/model-selector'
 
 export function MultimodalInput({
   input,
@@ -31,7 +45,9 @@ export function MultimodalInput({
   setAttachments: Dispatch<SetStateAction<Attachment[]>>
   messages: ChatMessage[]
   setMessages: UseChatHelpers<ChatMessage>['setMessages']
-  sendMessage: UseChatHelpers<ChatMessage>['sendMessage'] | (() => Promise<void>)
+  sendMessage:
+    | UseChatHelpers<ChatMessage>['sendMessage']
+    | (() => Promise<void>)
   selectedVisibilityType: VisibilityType
   selectedModelId: string
   onModelChange?: (modelId: string) => void
@@ -40,13 +56,20 @@ export function MultimodalInput({
   isLoading?: boolean
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const selectedModel = chatModels.find((model) => model.id === selectedModelId) ?? chatModels[0]
+  const selectedModel =
+    chatModels.find((model) => model.id === selectedModelId) ?? chatModels[0]
 
   const submit = () => {
-    if ((!input.trim() && attachments.length === 0) || status !== 'ready') return
+    if ((!input.trim() && attachments.length === 0) || status !== 'ready')
+      return
     sendMessage({
       parts: [
-        ...attachments.map((attachment) => ({ mediaType: attachment.contentType, name: attachment.name, type: 'file' as const, url: attachment.url })),
+        ...attachments.map((attachment) => ({
+          mediaType: attachment.contentType,
+          name: attachment.name,
+          type: 'file' as const,
+          url: attachment.url,
+        })),
         { text: input, type: 'text' as const },
       ],
       role: 'user',
@@ -58,14 +81,32 @@ export function MultimodalInput({
   return (
     <div className='relative flex w-full flex-col gap-2'>
       {editingMessage && (
-        <div className='flex items-center gap-2 text-xs text-muted-foreground'>Editing message <button onClick={onCancelEdit} type='button'>Cancel</button></div>
+        <div className='flex items-center gap-2 text-xs text-muted-foreground'>
+          Editing message{' '}
+          <button onClick={onCancelEdit} type='button'>
+            Cancel
+          </button>
+        </div>
       )}
       {attachments.length > 0 && (
         <div className='flex gap-2 overflow-x-auto'>
           {attachments.map((attachment) => (
-            <div className='flex items-center gap-2 rounded-md border bg-card px-2 py-1 text-xs' key={attachment.url}>
+            <div
+              className='flex items-center gap-2 rounded-md border bg-card px-2 py-1 text-xs'
+              key={attachment.url}
+            >
               <span className='max-w-40 truncate'>{attachment.name}</span>
-              <button aria-label='Remove attachment' onClick={() => setAttachments((items) => items.filter((item) => item.url !== attachment.url))} type='button'><XIcon className='size-3' /></button>
+              <button
+                aria-label='Remove attachment'
+                onClick={() =>
+                  setAttachments((items) =>
+                    items.filter((item) => item.url !== attachment.url)
+                  )
+                }
+                type='button'
+              >
+                <XIcon className='size-3' />
+              </button>
             </div>
           ))}
         </div>
@@ -80,18 +121,36 @@ export function MultimodalInput({
               submit()
             }
           }}
-          placeholder={editingMessage ? 'Edit your message...' : 'Ask anything...'}
+          placeholder={
+            editingMessage ? 'Edit your message...' : 'Ask anything...'
+          }
           value={input}
         />
         <div className='flex items-center gap-1'>
           <input
             className='hidden'
             multiple
-            onChange={(event) => setAttachments(Array.from(event.target.files ?? []).map((file) => ({ contentType: file.type, name: file.name, url: URL.createObjectURL(file) })))}
+            onChange={(event) =>
+              setAttachments(
+                Array.from(event.target.files ?? []).map((file) => ({
+                  contentType: file.type,
+                  name: file.name,
+                  url: URL.createObjectURL(file),
+                }))
+              )
+            }
             ref={fileInputRef}
             type='file'
           />
-          <Button aria-label='Attach files' onClick={() => fileInputRef.current?.click()} size='icon' type='button' variant='ghost'><PaperclipIcon /></Button>
+          <Button
+            aria-label='Attach files'
+            onClick={() => fileInputRef.current?.click()}
+            size='icon'
+            type='button'
+            variant='ghost'
+          >
+            <PaperclipIcon />
+          </Button>
           <ModelSelector>
             <ModelSelectorTrigger asChild>
               <Button className='min-w-0' type='button' variant='ghost'>
@@ -103,7 +162,11 @@ export function MultimodalInput({
             <ModelSelectorContent>
               <ModelSelectorGroup heading='Models'>
                 {chatModels.map((model) => (
-                  <ModelSelectorItem key={model.id} onSelect={() => onModelChange?.(model.id)} value={model.id}>
+                  <ModelSelectorItem
+                    key={model.id}
+                    onSelect={() => onModelChange?.(model.id)}
+                    value={model.id}
+                  >
                     <ModelSelectorLogo provider={model.provider} />
                     <ModelSelectorName>{model.name}</ModelSelectorName>
                   </ModelSelectorItem>
@@ -114,12 +177,18 @@ export function MultimodalInput({
           <Button
             aria-label={status === 'ready' ? 'Send message' : 'Stop response'}
             className='ml-auto rounded-full'
-            disabled={status === 'ready' && !input.trim() && attachments.length === 0}
+            disabled={
+              status === 'ready' && !input.trim() && attachments.length === 0
+            }
             onClick={status === 'ready' ? submit : stop}
             size='icon'
             type='button'
           >
-            {status === 'ready' ? <ArrowUpIcon /> : <SquareIcon className='fill-current' />}
+            {status === 'ready' ? (
+              <ArrowUpIcon />
+            ) : (
+              <SquareIcon className='fill-current' />
+            )}
           </Button>
         </div>
       </div>

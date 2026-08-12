@@ -2,16 +2,16 @@
 
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
 
 function InputGroup({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'group/input-group relative flex h-9 w-full min-w-0 items-center rounded-xl border border-input bg-input/30 transition-colors outline-none has-[textarea]:h-auto has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-[3px] has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50',
+        'group/input-group relative flex h-9 w-full min-w-0 items-center rounded-xl border border-input bg-input/30 transition-colors outline-none has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-[3px] has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50 has-[textarea]:h-auto has-[>[data-align=block-end]]:h-auto has-[>[data-align=block-end]]:flex-col',
         className
       )}
       data-slot='input-group'
@@ -49,9 +49,9 @@ function InputGroupAddon({
       onClick={(event) => {
         if ((event.target as HTMLElement).closest('button')) return
         event.currentTarget.parentElement
-          ?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
-            'textarea, input'
-          )
+          ?.querySelector<
+            HTMLInputElement | HTMLTextAreaElement
+          >('textarea, input')
           ?.focus()
       }}
       role='group'
@@ -66,19 +66,65 @@ function InputGroupButton({
   variant = 'ghost',
   ...props
 }: React.ComponentProps<typeof Button>) {
-  return <Button className={cn('shadow-none', className)} type={type} variant={variant} {...props} />
+  return (
+    <Button
+      className={cn('shadow-none', className)}
+      type={type}
+      variant={variant}
+      {...props}
+    />
+  )
 }
 
 function InputGroupText({ className, ...props }: React.ComponentProps<'span'>) {
-  return <span className={cn('flex items-center gap-2 text-sm text-muted-foreground', className)} {...props} />
+  return (
+    <span
+      className={cn(
+        'flex items-center gap-2 text-sm text-muted-foreground',
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-function InputGroupInput({ className, ...props }: React.ComponentProps<'input'>) {
-  return <Input className={cn('flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0', className)} data-slot='input-group-control' {...props} />
+function InputGroupInput({
+  className,
+  ...props
+}: React.ComponentProps<'input'>) {
+  return (
+    <Input
+      className={cn(
+        'flex-1 rounded-none border-0 bg-transparent shadow-none focus-visible:ring-0',
+        className
+      )}
+      data-slot='input-group-control'
+      {...props}
+    />
+  )
 }
 
-function InputGroupTextarea({ className, ...props }: React.ComponentProps<'textarea'>) {
-  return <Textarea className={cn('flex-1 resize-none rounded-none border-0 bg-transparent py-2 shadow-none focus-visible:ring-0 dark:bg-transparent', className)} data-slot='input-group-control' {...props} />
+function InputGroupTextarea({
+  className,
+  ...props
+}: React.ComponentProps<'textarea'>) {
+  return (
+    <Textarea
+      className={cn(
+        'flex-1 resize-none rounded-none border-0 bg-transparent py-2 shadow-none focus-visible:ring-0 dark:bg-transparent',
+        className
+      )}
+      data-slot='input-group-control'
+      {...props}
+    />
+  )
 }
 
-export { InputGroup, InputGroupAddon, InputGroupButton, InputGroupText, InputGroupInput, InputGroupTextarea }
+export {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupText,
+  InputGroupInput,
+  InputGroupTextarea,
+}

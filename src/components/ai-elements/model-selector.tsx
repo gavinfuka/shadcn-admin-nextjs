@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactNode } from 'react'
-
+import { cn } from '@/lib/utils'
 import {
   Command,
   CommandEmpty,
@@ -15,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import { cn } from '@/lib/utils'
 
 export type ModelSelectorProps = ComponentProps<typeof Popover>
 
@@ -29,7 +28,9 @@ export const ModelSelectorTrigger = (props: ModelSelectorTriggerProps) => (
   <PopoverTrigger {...props} />
 )
 
-export type ModelSelectorContentProps = ComponentProps<typeof PopoverContent> & {
+export type ModelSelectorContentProps = ComponentProps<
+  typeof PopoverContent
+> & {
   commandDefaultValue?: ComponentProps<typeof Command>['defaultValue']
   title?: ReactNode
 }
@@ -105,9 +106,7 @@ export const ModelSelectorItem = ({
   />
 )
 
-export type ModelSelectorShortcutProps = ComponentProps<
-  typeof CommandShortcut
->
+export type ModelSelectorShortcutProps = ComponentProps<typeof CommandShortcut>
 
 export const ModelSelectorShortcut = (props: ModelSelectorShortcutProps) => (
   <CommandShortcut {...props} />

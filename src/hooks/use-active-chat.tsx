@@ -1,7 +1,6 @@
 'use client'
 
-import { useChat, type UseChatHelpers } from '@ai-sdk/react'
-import { DefaultChatTransport } from 'ai'
+import { usePathname } from 'next/navigation'
 import {
   createContext,
   type Dispatch,
@@ -9,12 +8,19 @@ import {
   type SetStateAction,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react'
+import { useChat, type UseChatHelpers } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import { DEFAULT_CHAT_MODEL } from '@/lib/chat-models'
+import type {
+  ChatDataPart,
+  ChatMessage,
+  VisibilityType,
+} from '@/lib/chat-types'
 import { useDataStream } from '@/components/chat/data-stream-provider'
-import type { ChatDataPart, ChatMessage, VisibilityType } from '@/lib/chat-types'
 
 type ActiveChatContextValue = {
   chatId: string
@@ -44,7 +50,10 @@ const generateId = () => crypto.randomUUID()
 
 export function ActiveChatProvider({ children }: { children: ReactNode }) {
   const { setDataStream, setWaitingStatus } = useDataStream()
-  const [chatId, setChatId] = useState(generateId)
+  const pathname = usePathname()
+  const routeChatId = pathname.match(/\/ai-agent\/chat\/([^/]+)/)?.[1]
+  const [generatedChatId, setGeneratedChatId] = useState(generateId)
+  const chatId = routeChatId ?? generatedChatId
   const [input, setInput] = useState('')
   const [currentModelId, setCurrentModelId] = useState(DEFAULT_CHAT_MODEL)
   const [showCreditCardAlert, setShowCreditCardAlert] = useState(false)
@@ -53,17 +62,36 @@ export function ActiveChatProvider({ children }: { children: ReactNode }) {
     id: chatId,
     onData: (part) => {
       const dataPart = part as ChatDataPart
-      if (dataPart.type === 'data-waiting-status') setWaitingStatus(dataPart.data)
+      if (dataPart.type === 'data-waiting-status')
+        setWaitingStatus(dataPart.data)
       setDataStream((current) => [...current, dataPart])
     },
-    transport: new DefaultChatTransport({ api: '/api/chat', body: { modelId: currentModelId } }),
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+      body: { modelId: currentModelId },
+    }),
   })
+  const { setMessages } = chat
+
+  useEffect(() => {
+    if (!routeChatId) return
+    let cancelled = false
+    fetch(`/api/messages?chatId=${encodeURIComponent(routeChatId)}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { messages?: ChatMessage[] } | null) => {
+        if (!cancelled && data?.messages) setMessages(data.messages)
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [routeChatId, setMessages])
 
   const resetChat = useCallback(() => {
     chat.stop()
     chat.setMessages([])
     setInput('')
-    setChatId(generateId())
+    setGeneratedChatId(generateId())
     window.history.replaceState({}, '', '/ai-agent')
   }, [chat])
 
