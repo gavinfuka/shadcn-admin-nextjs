@@ -16,8 +16,8 @@
   "tailwindStylesheet": "./src/styles/index.css",
   "importOrder": [
     "^path$",
-    "^vite$",
-    "^@vitejs/(.*)$",
+    "^next$",
+    "^next/(.*)$",
     "^react$",
     "^react-dom/client$",
     "^react/(.*)$",

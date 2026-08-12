@@ -3,17 +3,12 @@
 
 # Except these files & folders
 !/src
-!index.html
 !package.json
-!tailwind.config.js
 !tsconfig.json
-!tsconfig.node.json
-!vite.config.ts
+!next.config.ts
+!vitest.config.ts
 !.prettierrc
 !README.md
 !eslint.config.js
-!postcss.config.js
+!postcss.config.mjs
 !.vscode/
-
-# Ignore auto generated routeTree.gen.ts
-/src/routeTree.gen.ts

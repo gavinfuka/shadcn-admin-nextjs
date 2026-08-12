@@ -1,6 +1,6 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import '@/styles/index.css'
-import type { Metadata } from 'next'
 import { Toaster } from '@/components/ui/sonner'
 import { NavigationProgress } from '@/components/navigation-progress'
 import { Providers } from './providers'
