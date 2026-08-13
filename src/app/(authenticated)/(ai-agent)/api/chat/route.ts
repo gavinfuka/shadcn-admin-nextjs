@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     execute: async ({ writer }) => {
       let finalOutput = ""
 
-      const service = new ClaudeCodeService(sandboxId)
+      const service = new ClaudeCodeService()
       service.setSession(sessionId)
 
       const cancelTimeout = await preventTimeoutStream(writer)
@@ -59,9 +59,6 @@ export async function POST(req: Request) {
       }
 
       if (finalOutput) {
-        writer.write({ type: "text-start", id: "0" })
-        writer.write({ type: "text-delta", id: "0", delta: finalOutput })
-        writer.write({ type: "text-end", id: "0" })
         cancelTimeout()
       }
     },
