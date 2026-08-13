@@ -16,7 +16,7 @@ export class ClaudeCodeService {
     this.baseClaudeConfigDir = process.env.BASE_CLAUDE_CONFIG_DIR || process.cwd()
     this.sandboxId = sandboxId.trim()
 
-    const activeClaudeConfigDir = this.activateSandbox(this.sandboxId)
+    const activeClaudeConfigDir = this.activateSandbox()
 
     this.defaultOptions = {
       cwd: activeClaudeConfigDir,
@@ -63,13 +63,13 @@ export class ClaudeCodeService {
     this.sessionId = sessionId?.trim() || undefined
 
     if (!this.sessionId) {
-      this.ensureSandboxExists(this.sandboxId)
+      this.ensureSandboxExists()
     }
   }
 
-  private ensureSandboxExists(sandboxId: string) {
+  private ensureSandboxExists() {
     const sourceClaudeDir = path.join(process.cwd(), ".claude")
-    const sandboxClaudeDir = this.getClaudeDir(sandboxId)
+    const sandboxClaudeDir = this.getClaudeDir()
     const sandboxCwd = path.dirname(sandboxClaudeDir)
     const sourceClaudeMd = path.join(process.cwd(), "Claude.md")
     const sandboxClaudeMd = path.join(sandboxCwd, "Claude.md")
@@ -108,19 +108,18 @@ export class ClaudeCodeService {
     })
   }
 
-  async getSessionMessages(sandboxId: string, sessionId: string) {
-    const normalizedSandboxId = sandboxId.trim()
+  async getSessionMessages(sessionId: string) {
     const normalizedSessionId = sessionId.trim()
 
     try {
-      this.activateSandbox(normalizedSandboxId)
+      this.activateSandbox()
       const sessionMessages = await getSessionMessages(normalizedSessionId)
       const toolCallMap = buildToolCallMap(sessionMessages)
 
       const messages = sessionMessages.map((entry, index) => toUIMessage(entry, index, toolCallMap)).filter((message): message is UIMessage => Boolean(message))
 
       return {
-        sandboxId: normalizedSandboxId,
+        sandboxId: this.sandboxId,
         sessionId: normalizedSessionId,
         messages,
         count: messages.length,
@@ -128,7 +127,7 @@ export class ClaudeCodeService {
     } catch (error) {
       if (this.isFileNotFoundError(error)) {
         return {
-          sandboxId: normalizedSandboxId,
+          sandboxId: this.sandboxId,
           sessionId: normalizedSessionId,
           messages: [],
           count: 0,
@@ -139,21 +138,20 @@ export class ClaudeCodeService {
     }
   }
 
-  async listSessions(sandboxId?: string) {
-    const normalizedSandboxId = (sandboxId ?? this.sandboxId).trim()
+  async listSessions() {
     try {
-      this.activateSandbox(normalizedSandboxId)
+      this.activateSandbox()
       const sessions = await listSdkSessions()
 
       return {
-        sandboxId: normalizedSandboxId,
+        sandboxId: this.sandboxId,
         sessions,
         count: sessions.length,
       }
     } catch (error) {
       if (this.isFileNotFoundError(error)) {
         return {
-          sandboxId: normalizedSandboxId,
+          sandboxId: this.sandboxId,
           sessions: [],
           count: 0,
         }
@@ -163,28 +161,22 @@ export class ClaudeCodeService {
     }
   }
 
-  /** @deprecated Use listSessions instead. */
-  getSeessions(sandboxId: string) {
-    return this.listSessions(sandboxId)
-  }
-
-  async listClaudeFiles(sandboxId: string) {
-    const normalizedSandboxId = sandboxId.trim()
-    const claudeDir = this.getClaudeDir(normalizedSandboxId)
+  async listClaudeFiles() {
+    const claudeDir = this.getClaudeDir()
 
     try {
       const files = await this.findAllFiles(claudeDir)
       const relativeFiles = files.map((filePath) => path.relative(claudeDir, filePath))
 
       return {
-        sandboxId: normalizedSandboxId,
+        sandboxId: this.sandboxId,
         files: relativeFiles,
         count: relativeFiles.length,
       }
     } catch (error) {
       if (this.isFileNotFoundError(error)) {
         return {
-          sandboxId: normalizedSandboxId,
+          sandboxId: this.sandboxId,
           files: [],
           count: 0,
         }
@@ -234,12 +226,11 @@ export class ClaudeCodeService {
     return files
   }
 
-  async readClaudeFile(sandboxId: string, filePath: string) {
-    const normalizedSandboxId = sandboxId.trim()
+  async readClaudeFile(filePath: string) {
     const normalizedFilePath = filePath.trim()
 
     const relativeFilePath = normalizedFilePath.replace(/^\.claude\//, "")
-    const claudeDir = this.getClaudeDir(normalizedSandboxId)
+    const claudeDir = this.getClaudeDir()
     const resolvedPath = path.resolve(claudeDir, relativeFilePath)
     const relativeResolvedPath = path.relative(claudeDir, resolvedPath)
 
@@ -250,12 +241,12 @@ export class ClaudeCodeService {
     return fs.promises.readFile(resolvedPath, "utf8")
   }
 
-  private getClaudeDir(sandboxId: string) {
-    return path.resolve(this.baseClaudeConfigDir, ".sandboxes", encodeURIComponent(sandboxId), ".claude")
+  private getClaudeDir() {
+    return path.resolve(this.baseClaudeConfigDir, ".sandboxes", encodeURIComponent(this.sandboxId), ".claude")
   }
 
-  private activateSandbox(sandboxId: string) {
-    const claudeConfigDir = this.getClaudeDir(sandboxId)
+  private activateSandbox() {
+    const claudeConfigDir = this.getClaudeDir()
     process.env.CLAUDE_CONFIG_DIR = claudeConfigDir
     return claudeConfigDir
   }

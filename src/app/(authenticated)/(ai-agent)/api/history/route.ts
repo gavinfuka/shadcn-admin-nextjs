@@ -5,7 +5,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const limit = Math.min(Math.max(Number(searchParams.get("limit") ?? 10), 1), 50)
   const sandboxId = searchParams.get("sandboxId") ?? "default"
-  const { sessions } = await new ClaudeCodeService(sandboxId).listSessions(sandboxId)
+  const { sessions } = await new ClaudeCodeService(sandboxId).listSessions()
   const chats = sessions.map((session) => ({
     id: session.sessionId,
     title: session.customTitle ?? session.summary ?? session.firstPrompt ?? "New chat",
