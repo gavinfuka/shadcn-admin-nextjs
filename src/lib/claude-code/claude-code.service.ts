@@ -1,8 +1,7 @@
 import path from "path"
 import { getSessionMessages, listSessions as listSdkSessions, query, type Options, type SDKUserMessage } from "@anthropic-ai/claude-agent-sdk"
-import type { UIMessage } from "ai"
 import fs from "fs"
-import { buildToolCallMap, toUIMessage } from "./utils/session-message-mapper"
+import { toUIMessages } from "./utils/session-message-mapper"
 
 export class ClaudeCodeService {
   private static readonly DEFAULT_SANDBOX_ID = "default"
@@ -27,6 +26,7 @@ export class ClaudeCodeService {
         CLAUDE_CONFIG_DIR: activeClaudeConfigDir,
       },
       model: `${process.env.COPILOT_MODEL}`,
+      // includePartialMessages: true,
       skills: "all",
       permissionMode: "bypassPermissions",
       allowDangerouslySkipPermissions: true,
@@ -114,9 +114,7 @@ export class ClaudeCodeService {
     try {
       this.activateSandbox()
       const sessionMessages = await getSessionMessages(normalizedSessionId)
-      const toolCallMap = buildToolCallMap(sessionMessages)
-
-      const messages = sessionMessages.map((entry, index) => toUIMessage(entry, index, toolCallMap)).filter((message): message is UIMessage => Boolean(message))
+      const messages = toUIMessages(sessionMessages)
 
       return {
         sandboxId: this.sandboxId,

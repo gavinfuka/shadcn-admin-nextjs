@@ -1,7 +1,8 @@
 import { SDKUserMessage } from "@anthropic-ai/claude-agent-sdk"
 import { createUIMessageStream, createUIMessageStreamResponse, UIMessage, isTextUIPart } from "ai"
 import { ClaudeCodeService } from "@/lib/claude-code/claude-code.service"
-import { claudeResponseToUiStream, preventTimeoutStream } from "@/lib/claude-code/utils/map-ui-response"
+import { EventStreamWriter } from "@/lib/claude-code/utils/event-stream-writer"
+import { claudeResponseToUiStream, createClaudeUiStreamState, preventTimeoutStream } from "@/lib/claude-code/utils/map-ui-response"
 
 async function* toSDKMessage(messages: UIMessage[]): AsyncIterable<SDKUserMessage> {
   const lastMessage = messages[messages.length - 1]
@@ -30,6 +31,8 @@ export async function POST(req: Request) {
   const stream = createUIMessageStream({
     execute: async ({ writer }) => {
       let finalOutput = ""
+      const uiStreamState = createClaudeUiStreamState()
+      const eventWriter = new EventStreamWriter<Record<string, unknown>>(writer)
 
       const service = new ClaudeCodeService()
       service.setSession(sessionId)
@@ -51,14 +54,15 @@ export async function POST(req: Request) {
 
           // Send sessionId to UI only when this request did not include one.
           if (!sessionId && messageSessionId) {
-            writer.write({ type: "data-session-id", data: messageSessionId })
+            eventWriter.data({ name: "session-id", value: messageSessionId })
           }
         }
 
-        claudeResponseToUiStream(message, writer)
+        claudeResponseToUiStream(message, writer, uiStreamState)
       }
 
       if (finalOutput) {
+        // eventWriter.text(finalOutput, { id: "0" })
         cancelTimeout()
       }
     },

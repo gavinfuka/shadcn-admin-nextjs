@@ -76,12 +76,13 @@ export function PreviewMessage({
             }
           />
         )
+
       return (
         <Tool defaultOpen key={toolPart.toolCallId ?? key}>
           <ToolHeader state={toolPart.state} type={toolPart.type} />
           <ToolContent>
             {toolPart.input !== undefined && <ToolInput input={toolPart.input} />}
-            {toolPart.state === "output-available" && <ToolOutput errorText={toolPart.errorText} output={toolPart.output} />}
+            {(toolPart.state === "output-available" || toolPart.state === "output-error") && <ToolOutput errorText={toolPart.errorText} output={toolPart.output} />}
           </ToolContent>
         </Tool>
       )
